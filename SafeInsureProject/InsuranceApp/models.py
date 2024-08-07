@@ -49,7 +49,7 @@ class InsurancePolicy(models.Model):
     waiting_period = models.CharField(max_length=50, blank=True, null=True)  # Waiting period for policies like health insurance
     expiry_period = models.DateTimeField(blank=True, null=True)  # Expiry date for the policy
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='insurance_policies')  # Reference to the company offering the policy
-    nominee_of_policy = models.ForeignKey(Nominee, on_delete=models.CASCADE, related_name='nominee_detail')
+    
 
     def __str__(self):
         return self.policy_name  # String representation of the policy object
@@ -78,6 +78,7 @@ class PolicyPurchase(models.Model):
     expiry_date = models.DateTimeField(blank=True, null=True)  # Expiry date for the purchased policy
     status = models.CharField(max_length=50, choices=[('active', 'Active'), ('expired', 'Expired')], default='active')
     policy_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    nominee_of_policy = models.ForeignKey(Nominee, on_delete=models.CASCADE, related_name='nominee_detail',null=True)
 
     def __str__(self):
         return f"{self.customer.name_of_customer} - {self.policy.policy_name}"

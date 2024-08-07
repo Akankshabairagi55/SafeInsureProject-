@@ -22,15 +22,15 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
         fields = ('username', 'password', 'name_of_customer', 'age', 'gender', 'email', 'mobile', 'nominee')
 
     def create(self, validated_data):
-        print(validated_data)
+        # print(validated_data)
         username = validated_data.pop('username')
         password = validated_data.pop('password')
         password = make_password(password)
         email = validated_data.get('email')
-        print(validated_data,username,password,email)
+        # print(validated_data,username,password,email)
         user = User.objects.create(username=username, email=email, password=password, is_customer=True)
         customer = Customer.objects.create(user=user, **validated_data)
-        print(user,customer)
+        # print(user,customer)
         return customer    
 
 

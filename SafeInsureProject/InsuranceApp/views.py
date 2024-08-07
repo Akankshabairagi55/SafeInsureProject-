@@ -1,19 +1,22 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import  AllowAny
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import Customer, Company, Nominee, InsurancePolicy, PolicyPurchase, Claim, Payment, User
-from .serializers import CustomerSerializer, CustomerRegisterSerializer, CompanyRegisterSerializer, CompanySerializer, NomineeSerializer, InsurancePolicySerializer, PolicyPurchaseSerializer, ClaimSerializer, PaymentSerializer
+from .models import *
+from .serializers import *
+from .permissions import isCustomer,isCompany
 
 # Customer Views
-class CustomerListCreateView(generics.ListCreateAPIView):
+class CustomerListView(generics.ListAPIView):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser]  # Only authenticated admin can list and create customers
+    
+   
 
 class CustomerRegisterView(APIView):
+    permission_classes=[AllowAny]
     def post(self, request, *args, **kwargs):
         serializer = CustomerRegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -24,24 +27,30 @@ class CustomerRegisterView(APIView):
 class CustomerDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can access customer details
+    permission_classes=[isCustomer]
+    
 
 # Company Views
 class CompanyListCreateView(generics.ListCreateAPIView):
+    permission_classes=[AllowAny]
     queryset = Company.objects.all()
     serializer_class = CompanyRegisterSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser]  # Only authenticated admin can list and create companies
+   
 
 class CompanyDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can access company details
+    permission_classes=[isCompany]
+    
 
 class LoginView(APIView):
+    permission_classes=[AllowAny]
     def post(self, request, *args, **kwargs):
         username = request.data.get('username')
         password = request.data.get('password')
-        user = authenticate(username=username, password=password)
+        user=User.objects.filter(username=username).first()
+        # user = authenticate(username=username, password=password)
+
         
         if user is not None:
             if user.is_customer or user.is_company:
@@ -61,53 +70,55 @@ class LoginView(APIView):
 class NomineeListCreateView(generics.ListCreateAPIView):
     queryset = Nominee.objects.all()
     serializer_class = NomineeSerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can list and create nominees
+   
+    
 
 class NomineeDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Nominee.objects.all()
     serializer_class = NomineeSerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can access nominee details
-
+    permission_classes=[isCustomer]
+    
 # InsurancePolicy Views
 class InsurancePolicyListCreateView(generics.ListCreateAPIView):
     queryset = InsurancePolicy.objects.all()
     serializer_class = InsurancePolicySerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can list and create insurance policies
 
+
+    
+    
 class InsurancePolicyDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = InsurancePolicy.objects.all()
     serializer_class = InsurancePolicySerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can access insurance policy details
-
+    
 # PolicyPurchase Views
 class PolicyPurchaseListCreateView(generics.ListCreateAPIView):
     queryset = PolicyPurchase.objects.all()
     serializer_class = PolicyPurchaseSerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can list and create policy purchases
+   
 
 class PolicyPurchaseDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = PolicyPurchase.objects.all()
     serializer_class = PolicyPurchaseSerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can access policy purchase details
+   
 
 # Claim Views
 class ClaimListCreateView(generics.ListCreateAPIView):
     queryset = Claim.objects.all()
     serializer_class = ClaimSerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can list and create claims
+    
 
 class ClaimDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Claim.objects.all()
     serializer_class = ClaimSerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can access claim details
+    
 
 # Payment Views
 class PaymentListCreateView(generics.ListCreateAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can list and create payments
+   
 
 class PaymentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can access payment details
+    

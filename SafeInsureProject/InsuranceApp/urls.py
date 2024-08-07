@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     
-    CustomerListCreateView, CustomerDetailView,
+    CustomerListView, CustomerDetailView,
     CompanyListCreateView, CompanyDetailView,
     NomineeListCreateView, NomineeDetailView,
     InsurancePolicyListCreateView, InsurancePolicyDetailView,
@@ -14,7 +14,7 @@ urlpatterns = [
     
 
     # Customer URLs
-    path('customers/', CustomerListCreateView.as_view(), name='customer-list-create'),
+    path('customers/', CustomerListView.as_view(), name='customer-list'),
     path('customers/<int:pk>/', CustomerDetailView.as_view(), name='customer-detail'),
 
     # Company URLs
@@ -26,7 +26,7 @@ urlpatterns = [
 
     #login
 
-     path('api/login/', LoginView.as_view(), name='login'),
+    path('login/', LoginView.as_view(), name='login'),
 
     # Nominee URLs
     path('nominees/', NomineeListCreateView.as_view(), name='nominee-list-create'),
