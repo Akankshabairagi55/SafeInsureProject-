@@ -7,7 +7,7 @@ from .views import (
     InsurancePolicyListCreateView, InsurancePolicyDetailView,
     PolicyPurchaseListCreateView, PolicyPurchaseDetailView,
     ClaimListCreateView, ClaimDetailView,
-    PaymentListCreateView, PaymentDetailView,LoginView,CustomerRegisterView
+    PaymentListCreateView, PaymentDetailView,LoginView,CustomerRegisterView,LogoutView
 )
 
 urlpatterns = [
@@ -27,6 +27,10 @@ urlpatterns = [
     #login
 
     path('login/', LoginView.as_view(), name='login'),
+
+    #logout
+
+    path('logout/',LogoutView.as_view(),name='logout'),
 
     # Nominee URLs
     path('nominees/', NomineeListCreateView.as_view(), name='nominee-list-create'),

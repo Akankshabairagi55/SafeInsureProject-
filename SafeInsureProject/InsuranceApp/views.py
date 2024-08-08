@@ -7,6 +7,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import *
 from .serializers import *
 from .permissions import isCustomer,isCompany
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken ,BlacklistedToken
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.exceptions import PermissionDenied
 
 # Customer Views
 class CustomerListView(generics.ListAPIView):
@@ -28,6 +31,13 @@ class CustomerDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     permission_classes=[isCustomer]
+    def get_object(self):
+        user=super().get_object(self)
+        if self.request.user.username!=user.username:
+            PermissionDenied(detail='You do not have permission to access this user')
+
+        return user   
+
     
 
 # Company Views
@@ -66,7 +76,22 @@ class LoginView(APIView):
         else:
             return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-# Nominee Views
+
+#LogOut View:
+
+class LogoutView(APIView):
+    def post(self,request):
+        try:
+            token=OutstandingToken.objects.filter(user=request.user).latest('created_at')
+            BlacklistedToken.objects.create(token=token)
+            return Response({"message": "Successfully logged out."}, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+    # Nominee Views
 class NomineeListCreateView(generics.ListCreateAPIView):
     queryset = Nominee.objects.all()
     serializer_class = NomineeSerializer
@@ -82,6 +107,7 @@ class NomineeDetailView(generics.RetrieveUpdateDestroyAPIView):
 class InsurancePolicyListCreateView(generics.ListCreateAPIView):
     queryset = InsurancePolicy.objects.all()
     serializer_class = InsurancePolicySerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
     
