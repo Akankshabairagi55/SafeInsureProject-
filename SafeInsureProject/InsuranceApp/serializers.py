@@ -19,7 +19,7 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        fields = ('username', 'password', 'name_of_customer', 'age', 'gender', 'email', 'mobile', 'nominee')
+        fields = ('username', 'password', 'name_of_customer', 'age', 'gender', 'email', 'mobile')
 
     def create(self, validated_data):
         # print(validated_data)
@@ -61,6 +61,13 @@ class CompanyRegisterSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(username=name_of_company, email=email, password=password, is_company=True)
         company = Company.objects.create(user=user, **validated_data)
         return company    
+
+
+class LoginSerializer(serializers.Serializer):
+    username=serializers.CharField(max_length=30)
+    password=serializers.CharField(max_length=30)
+
+    
 
 
 

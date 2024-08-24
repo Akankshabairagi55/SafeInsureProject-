@@ -7,14 +7,7 @@ class User(AbstractUser):
     is_company = models.BooleanField(default=False)
 
 
-class Nominee(models.Model):
-    name_of_nominee = models.CharField(max_length=100)  # Name of the nominee
-    relation=models.CharField(max_length=15, blank=True, null=True)
-    age = models.IntegerField(blank=True, null=True)  # Age of the nominee
-    mobile = models.CharField(max_length=15, blank=True, null=True)  # Mobile number of the nominee
 
-    def __str__(self):
-        return self.name_of_nominee  # String representation of the nominee object    
 
 
 class Company(models.Model):
@@ -63,12 +56,22 @@ class Customer(models.Model):
     gender = models.CharField(max_length=10, blank=True, null=True,choices=[('male','Male'),('female','Female'),('other','Other')])  # Gender of the customer
     email = models.EmailField(unique=True, blank=True, null=True)  # Unique email for the customer
     mobile = models.CharField(max_length=15, blank=True, null=True)  # Customer's mobile number
-    nominee = models.ForeignKey(Nominee, on_delete=models.CASCADE, related_name='customers', blank=True, null=True)  # Nominee of the customer
+   
     policies = models.ManyToManyField(InsurancePolicy, through='PolicyPurchase')  # Policies purchased by the customer
 
     def __str__(self):
         return self.name_of_customer  # String representation of the customer object
 
+
+class Nominee(models.Model):
+    name_of_nominee = models.CharField(max_length=100)  # Name of the nominee
+    relation=models.CharField(max_length=15, blank=True, null=True)
+    age = models.IntegerField(blank=True, null=True)  # Age of the nominee
+    mobile = models.CharField(max_length=15, blank=True, null=True)  # Mobile number of the nominee
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='nominees', blank=True, null=True)  # Nominee of the customer
+
+    def __str__(self):
+        return self.name_of_nominee  # String representation of the nominee object       
 
 # PolicyPurchase model to track purchased policies
 class PolicyPurchase(models.Model):
@@ -105,3 +108,6 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment of {self.amount_paid} for {self.policy_purchase.policy.policy_name}"
+    
+
+ 
